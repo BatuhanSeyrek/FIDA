@@ -1,6 +1,8 @@
 import 'package:fida/layout/main_layout.dart';
-import 'package:fida/screens/home_screen.dart';
+import 'package:fida/providers/AuthProvider.dart';
+import 'package:fida/screens/register_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -10,219 +12,248 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _emailController = TextEditingController();
+  // Controller isimlerini backend ile uyumlu olması için güncelledik
+  final _userNameController = TextEditingController();
   final _passwordController = TextEditingController();
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _userNameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
+  // Tasarımı bozmamak için login mantığını buraya aldık
+  Future<void> _handleLogin(AuthProvider authProvider) async {
+    final username = _userNameController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Lütfen tüm alanları doldurun!")),
+      );
+      return;
+    }
+
+    bool success = await authProvider.login(username, password);
+
+    if (success && mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainLayout()),
+      );
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Giriş başarısız! Bilgilerinizi kontrol edin."),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(
-        0xFF14183e,
-      ), // ANA RENK — LACİVERT (daha baskın)
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 20),
+    // Tasarımını Consumer içine alarak sadece gerekli yerleri tetikliyoruz
+    return Consumer<AuthProvider>(
+      builder: (context, auth, child) {
+        return Scaffold(
+          backgroundColor: const Color(0xFF14183e),
+          body: SafeArea(
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 20),
 
-                // --- LOGO DAİRE ---
-                Container(
-                  height: 150,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                    border: Border.all(
-                      color: Color(0xFF9c1132), // Bordo çerçeve
-                      width: 4,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF821034).withOpacity(0.4),
-                        blurRadius: 20,
-                        spreadRadius: 3,
-                        offset: const Offset(0, 10),
+                    // --- LOGO DAİRE (Dokunulmadı) ---
+                    Container(
+                      height: 150,
+                      width: 150,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        border: Border.all(
+                          color: const Color(0xFF9c1132),
+                          width: 4,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF821034).withOpacity(0.4),
+                            blurRadius: 20,
+                            spreadRadius: 3,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: ClipOval(
-                    child: Image.asset(
-                      "assets/images/logo.jpg",
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
-                // Başlık
-                Text(
-                  'FİDA ',
-                  style: TextStyle(
-                    fontFamily: String.fromCharCode(
-                      0x1D5EB,
-                    ), // Matematiksel İtalik Büyük F
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30,
-                    color: Colors.white, // Lacivert ile kontrast için beyaz
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Geleceğinizi Yönetin',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withOpacity(0.8),
-                  ),
-                ),
-
-                const SizedBox(height: 40),
-
-                // Email Kutusu
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF14183e).withOpacity(0.2),
-                        spreadRadius: 2,
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      controller: _emailController,
-                      style: const TextStyle(color: Colors.black),
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Email',
-                        prefixIcon: Icon(
-                          Icons.email_outlined,
-                          color: Color(0xFF14183e), // Lacivert ikon
+                      child: ClipOval(
+                        child: Image.asset(
+                          "assets/images/logo.jpg",
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
-                  ),
-                ),
 
-                const SizedBox(height: 15),
+                    const SizedBox(height: 30),
 
-                // Şifre Kutusu
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF14183e).withOpacity(0.2),
-                        spreadRadius: 2,
-                        blurRadius: 10,
+                    // Başlıklar
+                    const Text(
+                      'FİDA ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                        color: Colors.white,
                       ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      style: const TextStyle(color: Colors.black),
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Şifre',
-                        prefixIcon: Icon(
-                          Icons.lock_outline,
-                          color: Color(0xFF14183e), // Lacivert ikon
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Geleceğinizi Yönetin',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                    // Kullanıcı Adı Kutusu (Email Controller'ı userName yaptık)
+                    _buildInputContainer(
+                      child: TextField(
+                        controller: _userNameController,
+                        style: const TextStyle(color: Colors.black),
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Kullanıcı Adı',
+                          prefixIcon: Icon(
+                            Icons.person_outline,
+                            color: Color(0xFF14183e),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
 
-                const SizedBox(height: 25),
+                    const SizedBox(height: 15),
 
-                // Giriş Yap Butonu
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MainLayout()),
-                    );
-                    print("Giriş yapıldı: ${_emailController.text}");
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF9c1132), // Bordo buton
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF9c1132).withOpacity(0.4),
-                          spreadRadius: 2,
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
+                    // Şifre Kutusu
+                    _buildInputContainer(
+                      child: TextField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        style: const TextStyle(color: Colors.black),
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Şifre',
+                          prefixIcon: Icon(
+                            Icons.lock_outline,
+                            color: Color(0xFF14183e),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 25),
+
+                    // Giriş Yap Butonu (Loading Durumu Eklendi)
+                    GestureDetector(
+                      onTap: auth.isLoading ? null : () => _handleLogin(auth),
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF9c1132),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF9c1132).withOpacity(0.4),
+                              spreadRadius: 2,
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child:
+                              auth.isLoading
+                                  ? const SizedBox(
+                                    height: 25,
+                                    width: 25,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 3,
+                                    ),
+                                  )
+                                  : const Text(
+                                    'Giriş Yap',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Kayıt Ol Linki (Dokunulmadı)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Üye değil misiniz? ',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            // RegisterPage'e geçiş için navigasyon eklendi
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const RegisterPage(),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            'Hemen Kayıt Olun',
+                            style: TextStyle(
+                              color: Color(0xFF9c1132),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                    child: const Center(
-                      child: Text(
-                        'Giriş Yap',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                // Kayıt Ol Linki
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Üye değil misiniz? ',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {},
-                      child: const Text(
-                        'Hemen Kayıt Olun',
-                        style: TextStyle(
-                          color: Color(0xFF9c1132), // Bordo link
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 20),
                   ],
                 ),
-
-                const SizedBox(height: 20),
-              ],
+              ),
             ),
           ),
-        ),
+        );
+      },
+    );
+  }
+
+  // Tasarımını temiz tutmak için Container yapısını bir fonksiyona ayırdık
+  Widget _buildInputContainer({required Widget child}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF14183e).withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 10,
+          ),
+        ],
       ),
+      child: Padding(padding: const EdgeInsets.only(left: 20.0), child: child),
     );
   }
 }
