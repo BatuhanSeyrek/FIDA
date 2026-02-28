@@ -89,10 +89,6 @@ class _MainLayoutState extends State<MainLayout> {
               icon: _navIcon(Icons.person, 4),
               label: "Profil",
             ),
-            BottomNavigationBarItem(
-              icon: _navIcon(Icons.settings, 5),
-              label: "Ayarlar",
-            ),
           ],
         ),
       ),

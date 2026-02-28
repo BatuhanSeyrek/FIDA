@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import '../providers/expense_provider.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -13,15 +12,59 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  // AddExpenseScreen ile uyumlu renk paleti
   static const colorBg = Color(0xFF14183e);
-  static const colorPrimary = Color(0xFF9c1132);
+  static const colorPrimary = Color(0xFF9c1132); // İkonların ana vurgu rengi
   static const colorCardBg = Color(0xFF1b2255);
 
   @override
   void initState() {
     super.initState();
     Future.microtask(() => context.read<ExpenseeProvider>().loadExpenses());
+  }
+
+  // --- KATEGORİ YARDIMCI METODU ---
+  // Renkleri senin istediğin gibi 'colorPrimary' (Fatura rengi) üzerine kurguladım
+  Map<String, dynamic> _getCategoryDetails(String type) {
+    switch (type) {
+      case "BESLENME_VE_GIDA":
+        return {"name": "Yemek & Market", "icon": Icons.restaurant};
+      case "BARINMA_VE_EV_GIDERLERI":
+        return {"name": "Ev Giderleri", "icon": Icons.home_work_rounded};
+      case "FATURALAR_VE_ABONELIKLER":
+        return {
+          "name": "Fatura & Abonelik",
+          "icon": Icons.receipt_long_rounded,
+        };
+      case "ULASIM_VE_ARAC":
+        return {"name": "Ulaşım & Araç", "icon": Icons.directions_bus_rounded};
+      case "SAGLIK_VE_KISISEL_BAKIM":
+        return {
+          "name": "Sağlık & Bakım",
+          "icon": Icons.medical_services_rounded,
+        };
+      case "EGLENCE_VE_SOSYALLESME":
+        return {"name": "Eğlence & Sosyal", "icon": Icons.celebration_rounded};
+      case "EGITIM_VE_GELISIM":
+        return {"name": "Eğitim", "icon": Icons.school_rounded};
+      case "GIYIM_VE_AKSESUAR":
+        return {"name": "Giyim & Aksesuar", "icon": Icons.checkroom_rounded};
+      case "YATIRIM_VE_TASARRUF":
+        return {"name": "Yatırım & Tasarruf", "icon": Icons.savings_rounded};
+      case "BORC_VE_TAKSIT_ODEMELERI":
+        return {"name": "Borç & Taksit", "icon": Icons.credit_card_rounded};
+      case "HEDIYE_VE_BAGIS":
+        return {"name": "Hediye & Bağış", "icon": Icons.redeem_rounded};
+      case "COCUK_VE_EVCIL_HAYVAN":
+        return {"name": "Çocuk & Evcil", "icon": Icons.pets_rounded};
+      case "VERGI_VE_SIGORTA":
+        return {
+          "name": "Vergi & Sigorta",
+          "icon": Icons.assured_workload_rounded,
+        };
+      case "DIGER":
+      default:
+        return {"name": "Diğer", "icon": Icons.category_rounded};
+    }
   }
 
   @override
@@ -32,7 +75,6 @@ class _AccountScreenState extends State<AccountScreen> {
       backgroundColor: colorBg,
       body: Stack(
         children: [
-          // 1. ANA ARKA PLAN (Radyal Gradyan)
           Container(
             decoration: const BoxDecoration(
               gradient: RadialGradient(
@@ -42,36 +84,6 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
             ),
           ),
-
-          // 2. MESH EFEKTİ - Sağ Üst Işıma
-          Positioned(
-            top: -100,
-            right: -50,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: colorPrimary.withOpacity(0.07),
-              ),
-            ),
-          ),
-
-          // 3. MESH EFEKTİ - Sol Alt Işıma
-          Positioned(
-            bottom: 50,
-            left: -80,
-            child: Container(
-              width: 250,
-              height: 250,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: colorPrimary.withOpacity(0.05),
-              ),
-            ),
-          ),
-
-          // 4. İÇERİK KATMANI
           SafeArea(
             child:
                 provider.isLoading && provider.expenses.isEmpty
@@ -91,20 +103,12 @@ class _AccountScreenState extends State<AccountScreen> {
                             const SizedBox(height: 20),
                             _buildCustomAppBar(),
                             const SizedBox(height: 30),
-
-                            // 1. TOPLAM BAKİYE KARTI
                             _toplamBakiyeCard(provider.totalAmount),
-
                             const SizedBox(height: 35),
-
-                            // 2. GRAFİK BÖLÜMÜ
                             _sectionHeader("AYLIK ÖZET"),
                             const SizedBox(height: 15),
                             _miniGrafik(provider.monthlyTotals),
-
                             const SizedBox(height: 35),
-
-                            // 3. İŞLEM LİSTESİ
                             _sectionHeader("SON İŞLEMLER"),
                             const SizedBox(height: 15),
                             _islemListesi(provider),
@@ -120,30 +124,15 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Widget _buildCustomAppBar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
-        Text(
-          "HESABIM",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 6,
-            fontSize: 14,
-          ),
+    return const Center(
+      child: Text(
+        "HESABIM",
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 6,
+          fontSize: 14,
         ),
-      ],
-    );
-  }
-
-  Widget _sectionHeader(String title) {
-    return Text(
-      title,
-      style: TextStyle(
-        color: Colors.white.withOpacity(0.4),
-        fontSize: 11,
-        fontWeight: FontWeight.w900,
-        letterSpacing: 2,
       ),
     );
   }
@@ -298,6 +287,8 @@ class _AccountScreenState extends State<AccountScreen> {
       itemCount: sortedList.length,
       itemBuilder: (context, index) {
         final expense = sortedList[index];
+        final category = _getCategoryDetails(expense.type);
+
         return Container(
           margin: const EdgeInsets.only(bottom: 15),
           padding: const EdgeInsets.all(20),
@@ -308,17 +299,18 @@ class _AccountScreenState extends State<AccountScreen> {
           ),
           child: Row(
             children: [
+              // İKON KUTUCUĞU - İstediğin Vurgulu Renk
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: colorPrimary.withOpacity(0.1),
+                  color: colorPrimary.withOpacity(
+                    0.15,
+                  ), // Arka planda yumuşak vurgu
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Icon(
-                  expense.type == "BESLENME_VE_GIDA"
-                      ? Icons.restaurant
-                      : Icons.directions_bus,
-                  color: colorPrimary,
+                  category["icon"],
+                  color: colorPrimary, // İkonun kendisi tam parlak vurgu
                   size: 22,
                 ),
               ),
@@ -337,7 +329,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      _getCategoryName(expense.type),
+                      category["name"],
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.3),
                         fontSize: 12,
@@ -374,14 +366,15 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  String _getCategoryName(String type) {
-    switch (type) {
-      case "BESLENME_VE_GIDA":
-        return "Yemek & Market";
-      case "ULASIM_VE_ARAC":
-        return "Ulaşım";
-      default:
-        return "Diğer";
-    }
+  Widget _sectionHeader(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        color: Colors.white.withOpacity(0.4),
+        fontSize: 11,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 2,
+      ),
+    );
   }
 }

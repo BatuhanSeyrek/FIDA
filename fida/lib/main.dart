@@ -1,4 +1,6 @@
 import 'package:fida/providers/AuthProvider.dart';
+import 'package:fida/providers/IncomeProvider.dart';
+import 'package:fida/providers/UserProvider.dart';
 import 'package:fida/providers/expense_provider.dart';
 import 'package:fida/providers/ExpenseProvider.dart';
 
@@ -14,6 +16,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ExpenseProvider()),
         ChangeNotifierProvider(create: (_) => ExpenseeProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => IncomeProvider()),
       ],
       child: const FidaApp(),
     ),

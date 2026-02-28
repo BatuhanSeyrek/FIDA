@@ -20,6 +20,54 @@ class ExpenseeProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // --- PROVIDER İÇİNE EKLENECEK KISIM ---
+  List<double> get last30DaysTotals {
+    List<double> dailyTotals = List.generate(30, (index) => 0.0);
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+
+    for (var expense in _expenses) {
+      DateTime expDate = DateTime(
+        expense.createdAt.year,
+        expense.createdAt.month,
+        expense.createdAt.day,
+      );
+      int diff = today.difference(expDate).inDays;
+      if (diff >= 0 && diff < 30) {
+        dailyTotals[29 - diff] += expense.amount;
+      }
+    }
+    return dailyTotals;
+  }
+
+  List<String> get last30DaysLabels {
+    List<String> labels = [];
+    DateTime now = DateTime.now();
+    for (int i = 29; i >= 0; i--) {
+      DateTime date = now.subtract(Duration(days: i));
+      labels.add("${date.day} ${_getMonthName(date.month)}");
+    }
+    return labels;
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      "Oca",
+      "Şub",
+      "Mar",
+      "Nis",
+      "May",
+      "Haz",
+      "Tem",
+      "Ağu",
+      "Eyl",
+      "Eki",
+      "Kas",
+      "Ara",
+    ];
+    return months[month - 1];
+  }
+
   List<double> get monthlyTotals {
     // 12 aylık (0-11 index) boş bir liste oluştur
     List<double> totals = List.generate(12, (index) => 0.0);
