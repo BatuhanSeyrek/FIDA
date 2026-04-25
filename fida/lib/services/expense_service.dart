@@ -5,7 +5,6 @@ import 'package:fida/models/ExpenseRequest.dart';
 import 'package:http/http.dart' as http;
 
 class ExpenseService {
-  final String baseUrl = "http://10.0.2.2:8080/expenses/record";
   final SecureStorage _storage = SecureStorage();
 
   Future<bool> recordExpense(ExpenseRequest request) async {
@@ -17,7 +16,9 @@ class ExpenseService {
 
       // 2. İsteği gönder (Header'a Bearer token ekle)
       final response = await http.post(
-        Uri.parse(baseUrl),
+        Uri.parse(
+          "https://antone-unupbraiding-stephine.ngrok-free.dev/expenses/record",
+        ),
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $token",
@@ -32,8 +33,6 @@ class ExpenseService {
     }
   }
 
-  final String url = "http://10.0.2.2:8080/expenses/expensesList";
-
   Future<List<ExpenseModel>> fetchExpenses() async {
     try {
       // 1. Token'ı depodan oku
@@ -41,7 +40,9 @@ class ExpenseService {
 
       // 2. İsteği gönderirken başlığa (Header) ekle
       final response = await http.get(
-        Uri.parse(url),
+        Uri.parse(
+          "https://antone-unupbraiding-stephine.ngrok-free.dev/expenses/expensesList",
+        ),
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token', // Token burada ekleniyor

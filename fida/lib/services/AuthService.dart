@@ -5,12 +5,13 @@ import 'package:http/http.dart' as http;
 
 class AuthService {
   // Emülatör kullanıyorsan 10.0.2.2, fiziksel cihaz ise bilgisayar IP'ni yazmalısın.
-  final String baseUrl = "http://10.0.2.2:8080/user/login";
 
   Future<LoginResponse?> login(String username, String password) async {
     try {
       final response = await http.post(
-        Uri.parse(baseUrl),
+        Uri.parse(
+          "https://antone-unupbraiding-stephine.ngrok-free.dev/user/login",
+        ),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"username": username, "password": password}),
       );
@@ -28,7 +29,9 @@ class AuthService {
   Future<bool> register(RegisterRequest request) async {
     try {
       final response = await http.post(
-        Uri.parse("http://10.0.2.2:8080/user/register"),
+        Uri.parse(
+          "https://antone-unupbraiding-stephine.ngrok-free.dev/user/register",
+        ),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(request.toJson()),
       );

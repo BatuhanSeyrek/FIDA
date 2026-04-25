@@ -3,11 +3,11 @@ import 'package:fida/models/UserModel.dart';
 import 'package:http/http.dart' as http;
 
 class UserService {
-  final String baseUrl = "http://10.0.2.2:8080/user";
-
   Future<UserModel?> fetchUserProfile(String token) async {
     final response = await http.get(
-      Uri.parse("$baseUrl/list"),
+      Uri.parse(
+        "https://antone-unupbraiding-stephine.ngrok-free.dev/user/list",
+      ),
       headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 200) {
@@ -18,7 +18,9 @@ class UserService {
 
   Future<UserModel?> updateUser(UserModel user, String token) async {
     final response = await http.post(
-      Uri.parse("$baseUrl/update"),
+      Uri.parse(
+        "https://antone-unupbraiding-stephine.ngrok-free.dev/user/update",
+      ),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',

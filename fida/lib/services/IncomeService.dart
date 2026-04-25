@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import '../models/IncomeModel.dart';
 
 class IncomeService {
-  final String baseUrl = "http://10.0.2.2:8080/income";
   final SecureStorage _storage = SecureStorage();
 
   // Header hazırlayan yardımcı metod (Tüm isteklere bunu ekliyoruz)
@@ -22,7 +21,9 @@ class IncomeService {
     try {
       final headers = await _getHeaders();
       final response = await http.get(
-        Uri.parse("$baseUrl/list"),
+        Uri.parse(
+          "https://antone-unupbraiding-stephine.ngrok-free.dev/income/list",
+        ),
         headers: headers,
       );
 
@@ -40,7 +41,9 @@ class IncomeService {
     try {
       final headers = await _getHeaders();
       final response = await http.post(
-        Uri.parse("$baseUrl/record"),
+        Uri.parse(
+          "https://antone-unupbraiding-stephine.ngrok-free.dev/income/record",
+        ),
         headers: headers,
         body: jsonEncode({'income': amount}),
       );
@@ -56,7 +59,9 @@ class IncomeService {
     try {
       final headers = await _getHeaders();
       final response = await http.delete(
-        Uri.parse("$baseUrl/delete"),
+        Uri.parse(
+          "https://antone-unupbraiding-stephine.ngrok-free.dev/income/delete",
+        ),
         headers: headers,
       );
       return response.statusCode == 200;
