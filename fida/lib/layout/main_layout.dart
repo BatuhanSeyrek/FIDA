@@ -1,3 +1,4 @@
+import 'package:fida/screens/FinanceGameScreen.dart';
 import 'package:fida/screens/add_expense_screen.dart';
 import 'package:fida/screens/chat_bot_screen.dart';
 import 'package:fida/screens/profile_screen.dart';
@@ -20,13 +21,16 @@ class _MainLayoutState extends State<MainLayout> {
   static const colorBordo = Color(0xFF9c1132);
   static const colorDarkBordo = Color(0xFF821034);
 
+  // 1. Pages listesine FinanceGameScreen'i ekliyoruz.
+  // Sıralamayı bozmamak için Asistan'dan (3) hemen sonraya koydum.
   final List<Widget> pages = [
     const HomeScreen(), // 0
     AddExpenseScreen(), // 1
     AccountScreen(), // 2
-    const ChatBotScreen(), // 3 <- ÖZEL YENİ SAYFA
-    const ProfileScreen(), // 4
-    SettingsScreen(), // 5
+    const ChatBotScreen(), // 3 <- ASİSTAN YERİNDE SABİT
+    const FinanceGameScreen(), // 4 <- OYUN BURAYA GELDİ
+    const ProfileScreen(), // 5
+    SettingsScreen(), // 6
   ];
 
   @override
@@ -51,13 +55,13 @@ class _MainLayoutState extends State<MainLayout> {
           currentIndex: _currentIndex,
           selectedItemColor: colorBordo,
           unselectedItemColor: Colors.white70,
-          type: BottomNavigationBarType.fixed,
+          type: BottomNavigationBarType.fixed, // 6 buton için bu şart
 
           selectedLabelStyle: const TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 13,
+            fontSize: 11, // Alan daraldığı için fontu 1 tık küçülttük
           ),
-          unselectedLabelStyle: const TextStyle(fontSize: 12),
+          unselectedLabelStyle: const TextStyle(fontSize: 10),
 
           onTap: (index) {
             setState(() {
@@ -79,14 +83,19 @@ class _MainLayoutState extends State<MainLayout> {
               label: "Hesap",
             ),
 
-            /// 📌 ÖZEL CHATBOT BUTONU
             BottomNavigationBarItem(
               icon: _navIcon(Icons.smart_toy_outlined, 3),
               label: "Asistan",
             ),
 
+            // 2. OYUN BUTONU (Yeni eklendi, diğerlerini kaydırmadı sadece araya girdi)
             BottomNavigationBarItem(
-              icon: _navIcon(Icons.person, 4),
+              icon: _navIcon(Icons.sports_esports_outlined, 4),
+              label: "Oyun",
+            ),
+
+            BottomNavigationBarItem(
+              icon: _navIcon(Icons.person, 5),
               label: "Profil",
             ),
           ],
@@ -95,19 +104,20 @@ class _MainLayoutState extends State<MainLayout> {
     );
   }
 
+  // İkonların birbirine girmemesi için padding ve size değerlerini hafif optimize ettim
   Widget _navIcon(IconData icon, int index) {
     bool isSelected = _currentIndex == index;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
         color: isSelected ? colorBordo.withOpacity(0.15) : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Icon(
         icon,
-        size: isSelected ? 30 : 26,
+        size: isSelected ? 28 : 24,
         color: isSelected ? colorBordo : Colors.white70,
       ),
     );

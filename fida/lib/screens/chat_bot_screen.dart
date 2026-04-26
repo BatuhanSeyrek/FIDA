@@ -23,7 +23,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
 
   bool _isLoading = false;
 
-  final String apiKey = "BURAYA_API_KEY";
+  final String apiKey = "AIzaSyAy1mLcFi06QunQG-RjcA1GQzbsW1yiFSs";
 
   // 🔥 SELAMLAMA
   bool _isGreeting(String text) {
